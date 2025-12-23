@@ -1,0 +1,13 @@
+# Java
+/bin/
+/out/
+*.class
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+
+# Logs
+*.log
