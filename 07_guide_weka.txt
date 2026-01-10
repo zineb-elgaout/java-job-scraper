@@ -1,0 +1,55 @@
+📚 GUIDE COMPLET POUR WEKA
+==================================================
+
+🎯 FICHIERS GÉNÉRÉS :
+1. 01_données_nettoyées.csv - Données brutes nettoyées
+2. 02_features_extraits.csv - Features extraites
+3. 03_distribution_categories.csv - Statistiques des catégories
+4. 04_dataset_complet.csv - Dataset complet
+5. 05_dataset_simplifié.csv - Dataset simplifié pour débuter
+6. 06_weka_ready.arff - Format ARFF pour Weka
+7. 07_guide_weka.txt - Ce guide
+
+🚀 DÉMARRAGE RAPIDE :
+-------------------------
+1. Ouvrir Weka Explorer
+2. Cliquer sur 'Open file'
+3. Sélectionner '06_weka_ready.arff'
+4. Explorer les données dans 'Preprocess'
+
+🔧 ANALYSES RECOMMANDÉES :
+------------------------------
+A. CLASSIFICATION :
+   • Algorithme : J48 (arbre de décision)
+   • Test : 10-fold cross-validation
+   • Classe : category
+   → Prédit la catégorie d'une offre
+
+B. CLUSTERING :
+   • Algorithme : SimpleKMeans
+   • Clusters : 5
+   → Regroupe les offres similaires
+
+C. ASSOCIATION :
+   • Algorithme : Apriori
+   → Trouve des règles d'association
+
+📊 CATÉGORIES DISPONIBLES :
+------------------------------
+• IT_DEVELOPPEMENT : Postes IT et développement
+• COMMERCIAL_VENTE : Vente et business
+• MARKETING_COM : Marketing et communication
+• RESSOURCES_HUMAINES : RH et recrutement
+• COMPTABILITE_FINANCE : Comptabilité et finance
+• LOGISTIQUE_TRANSPORT : Logistique et transport
+• PRODUCTION_INDUSTRIE : Production et industrie
+• ADMINISTRATIF : Secrétariat et administration
+• INGENIERIE : Ingénierie générale
+• MANAGEMENT : Management et direction
+• DATA_IA : Data science et intelligence artificielle
+• AUTRE : Autres métiers
+
+💡 CONSEILS :
+- Commencez par le dataset simplifié (05_dataset_simplifié.csv)
+- Visualisez les données avec 'Visualize'
+- Exportez les modèles entraînés
