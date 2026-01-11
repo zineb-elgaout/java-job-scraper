@@ -10,17 +10,15 @@ import java.sql.SQLException;
 
 public class JobOfferDAO {
 
-    private static final String INSERT_SQL =
-            "INSERT INTO jobs (title, company, location, description, link, source) " +
+    private static final String INSERT_SQL = "INSERT INTO jobs (title, company, location, description, link, source) " +
             "VALUES (?, ?, ?, ?, ?, ?)";
 
-    private static final String CHECK_EXISTS_SQL =
-            "SELECT id FROM jobs WHERE link = ?";
+    private static final String CHECK_EXISTS_SQL = "SELECT id FROM jobs WHERE link = ?";
 
-    // 🔍 Vérifier si l'offre existe déjà
+    // Vérifier si l'offre existe déjà
     public boolean existsByLink(String link) {
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(CHECK_EXISTS_SQL)) {
+                PreparedStatement ps = conn.prepareStatement(CHECK_EXISTS_SQL)) {
 
             ps.setString(1, link);
             ResultSet rs = ps.executeQuery();
@@ -32,7 +30,7 @@ public class JobOfferDAO {
         }
     }
 
-    // 💾 Insertion
+    // Insertion
     public void insert(JobOffer offer) {
 
         if (existsByLink(offer.getLink())) {
@@ -41,7 +39,7 @@ public class JobOfferDAO {
         }
 
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(INSERT_SQL)) {
+                PreparedStatement ps = conn.prepareStatement(INSERT_SQL)) {
 
             ps.setString(1, offer.getTitle());
             ps.setString(2, offer.getCompany());
@@ -51,10 +49,10 @@ public class JobOfferDAO {
             ps.setString(6, offer.getSource());
 
             ps.executeUpdate();
-            System.out.println("✅ Offre insérée : " + offer.getTitle());
+            System.out.println("Offre insérée : " + offer.getTitle());
 
         } catch (SQLException e) {
-            System.out.println("⚠️ Erreur insertion offre");
+            System.out.println(" Erreur insertion offre");
             e.printStackTrace();
         }
     }

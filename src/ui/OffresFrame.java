@@ -37,7 +37,7 @@ public class OffresFrame extends JFrame {
     private JLabel countLabel;
     private JButton exportButton;
     private List<JobOffer> jobOffers;
-    
+
     private File selectedFile;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
@@ -61,9 +61,8 @@ public class OffresFrame extends JFrame {
         JPanel header = new JPanel(new BorderLayout());
         header.setBackground(Color.WHITE);
         header.setBorder(new CompoundBorder(
-            BorderFactory.createMatteBorder(0, 0, 1, 0, BORDER_COLOR),
-            new EmptyBorder(20, 40, 20, 40)
-        ));
+                BorderFactory.createMatteBorder(0, 0, 1, 0, BORDER_COLOR),
+                new EmptyBorder(20, 40, 20, 40)));
 
         // Titre à gauche
         JLabel titleLabel = new JLabel("Offres d'emploi");
@@ -80,7 +79,7 @@ public class OffresFrame extends JFrame {
         // ========== PANEL PRINCIPAL CONTENANT TOUT ==========
         JPanel contentPanel = new JPanel(new BorderLayout(0, 0));
         contentPanel.setBackground(BACKGROUND_COLOR);
-        
+
         // ========== PANEL D'INFORMATIONS ==========
         JPanel infoPanel = new JPanel(new BorderLayout());
         infoPanel.setBackground(BACKGROUND_COLOR);
@@ -100,7 +99,7 @@ public class OffresFrame extends JFrame {
         tablePanel.setBorder(new EmptyBorder(0, 40, 0, 40));
 
         // Modèle de table
-        String[] columns = {"ID", "Titre", "Entreprise", "Lieu", "Source", "Date", "Description"};
+        String[] columns = { "ID", "Titre", "Entreprise", "Lieu", "Source", "Date", "Description" };
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -128,19 +127,19 @@ public class OffresFrame extends JFrame {
         // Configuration manuelle des largeurs de colonnes
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         TableColumnModel columnModel = table.getColumnModel();
-        columnModel.getColumn(0).setPreferredWidth(40);   // ID - réduit
-        columnModel.getColumn(1).setPreferredWidth(250);  // Titre
-        columnModel.getColumn(2).setPreferredWidth(150);  // Entreprise
-        columnModel.getColumn(3).setPreferredWidth(100);  // Lieu
-        columnModel.getColumn(4).setPreferredWidth(100);  // Source
-        columnModel.getColumn(5).setPreferredWidth(100);  // Date
-        columnModel.getColumn(6).setPreferredWidth(400);  // Description - augmenté
+        columnModel.getColumn(0).setPreferredWidth(40); // ID - réduit
+        columnModel.getColumn(1).setPreferredWidth(250); // Titre
+        columnModel.getColumn(2).setPreferredWidth(150); // Entreprise
+        columnModel.getColumn(3).setPreferredWidth(100); // Lieu
+        columnModel.getColumn(4).setPreferredWidth(100); // Source
+        columnModel.getColumn(5).setPreferredWidth(100); // Date
+        columnModel.getColumn(6).setPreferredWidth(400); // Description - augmenté
 
         // Scroll pane avec style
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 1));
         scrollPane.getViewport().setBackground(Color.WHITE);
-        
+
         // Ajouter un effet de survol aux lignes
         table.addMouseMotionListener(new MouseAdapter() {
             @Override
@@ -159,9 +158,8 @@ public class OffresFrame extends JFrame {
         JPanel detailsPanel = new JPanel(new BorderLayout());
         detailsPanel.setBackground(Color.WHITE);
         detailsPanel.setBorder(new CompoundBorder(
-            BorderFactory.createMatteBorder(1, 0, 0, 0, BORDER_COLOR),
-            new EmptyBorder(10, 40, 10, 40)
-        ));
+                BorderFactory.createMatteBorder(1, 0, 0, 0, BORDER_COLOR),
+                new EmptyBorder(10, 40, 10, 40)));
         detailsPanel.setPreferredSize(new Dimension(0, 80));
 
         JLabel detailsTitle = new JLabel("Lien de l'offre");
@@ -173,9 +171,8 @@ public class OffresFrame extends JFrame {
         linkField.setForeground(TEXT_PRIMARY);
         linkField.setBackground(new Color(250, 251, 252));
         linkField.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(BORDER_COLOR, 1),
-            new EmptyBorder(8, 10, 8, 10)
-        ));
+                BorderFactory.createLineBorder(BORDER_COLOR, 1),
+                new EmptyBorder(8, 10, 8, 10)));
         linkField.setEditable(false);
 
         // Lorsqu'une ligne est sélectionnée, afficher le lien
@@ -204,20 +201,19 @@ public class OffresFrame extends JFrame {
         JPanel exportPanel = new JPanel(new BorderLayout());
         exportPanel.setBackground(BACKGROUND_COLOR);
         exportPanel.setBorder(new CompoundBorder(
-            BorderFactory.createMatteBorder(1, 0, 0, 0, BORDER_COLOR),
-            new EmptyBorder(15, 40, 15, 40)
-        ));
+                BorderFactory.createMatteBorder(1, 0, 0, 0, BORDER_COLOR),
+                new EmptyBorder(15, 40, 15, 40)));
         exportPanel.setPreferredSize(new Dimension(0, 70));
-        
+
         exportButton = createExportButton();
         JPanel buttonContainer = new JPanel(new GridBagLayout()); // Utiliser GridBagLayout pour centrer
         buttonContainer.setBackground(BACKGROUND_COLOR);
-        
+
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
         buttonContainer.add(exportButton, gbc);
-        
+
         exportPanel.add(buttonContainer, BorderLayout.CENTER);
         mainPanel.add(exportPanel, BorderLayout.SOUTH);
 
@@ -280,7 +276,7 @@ public class OffresFrame extends JFrame {
         button.setFont(new Font("Segoe UI", Font.BOLD, 14));
         button.setForeground(Color.WHITE);
         button.setHorizontalAlignment(SwingConstants.CENTER); // Centrer le texte
-        button.setVerticalAlignment(SwingConstants.CENTER);   // Centrer le texte verticalement
+        button.setVerticalAlignment(SwingConstants.CENTER); // Centrer le texte verticalement
         button.setBorder(BorderFactory.createEmptyBorder(12, 40, 12, 40)); // Padding égal des deux côtés
         button.setContentAreaFilled(false);
         button.setBorderPainted(false);
@@ -307,37 +303,37 @@ public class OffresFrame extends JFrame {
             protected void done() {
                 try {
                     tableModel.setRowCount(0);
-                    
+
                     if (jobOffers != null && !jobOffers.isEmpty()) {
                         int id = 1;
                         for (JobOffer offer : jobOffers) {
                             Object[] row = {
-                                id++,
-                                shortenText(offer.getTitle(), 60),
-                                shortenText(offer.getCompany(), 25),
-                                shortenText(offer.getLocation(), 20),
-                                offer.getSource(),
-                                getFormattedDate(offer),
-                                shortenText(offer.getDescription(), 120) // Description plus longue
+                                    id++,
+                                    shortenText(offer.getTitle(), 60),
+                                    shortenText(offer.getCompany(), 25),
+                                    shortenText(offer.getLocation(), 20),
+                                    offer.getSource(),
+                                    getFormattedDate(offer),
+                                    shortenText(offer.getDescription(), 120) // Description plus longue
                             };
                             tableModel.addRow(row);
                         }
-                        
-                        countLabel.setText(String.format("📊 %d offres trouvées", jobOffers.size()));
+
+                        countLabel.setText(String.format(" %d offres trouvées", jobOffers.size()));
                         exportButton.setEnabled(true);
                     } else {
-                        countLabel.setText("📭 Aucune offre trouvée dans la base de données");
+                        countLabel.setText(" Aucune offre trouvée dans la base de données");
                     }
                 } catch (Exception e) {
-                    countLabel.setText("❌ Erreur lors du chargement des données");
+                    countLabel.setText(" Erreur lors du chargement des données");
                     e.printStackTrace();
                 }
             }
         };
-        
+
         worker.execute();
     }
-    
+
     private String getFormattedDate(JobOffer offer) {
         try {
             return new SimpleDateFormat("dd/MM/yyyy").format(new Date());
@@ -345,19 +341,21 @@ public class OffresFrame extends JFrame {
             return "N/A";
         }
     }
-    
+
     private String shortenText(String text, int maxLength) {
-        if (text == null) return "";
-        if (text.length() <= maxLength) return text;
+        if (text == null)
+            return "";
+        if (text.length() <= maxLength)
+            return text;
         return text.substring(0, maxLength - 3) + "...";
     }
 
     private void exportToExcelCSV() {
         if (jobOffers == null || jobOffers.isEmpty()) {
             JOptionPane.showMessageDialog(this,
-                "Aucune donnée à exporter.",
-                "Export Excel",
-                JOptionPane.WARNING_MESSAGE);
+                    "Aucune donnée à exporter.",
+                    "Export Excel",
+                    JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -379,27 +377,27 @@ public class OffresFrame extends JFrame {
                     try (PrintWriter writer = new PrintWriter(selectedFile, "UTF-8")) {
                         writer.write('\ufeff');
                         writer.println("ID,Titre,Entreprise,Lieu,Source,Date,Description,Lien");
-                        
+
                         int id = 1;
                         for (JobOffer offer : jobOffers) {
                             String row = String.format("%d,\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
-                                id++,
-                                escapeCsv(offer.getTitle()),
-                                escapeCsv(offer.getCompany()),
-                                escapeCsv(offer.getLocation()),
-                                escapeCsv(offer.getSource()),
-                                escapeCsv(getFormattedDate(offer)),
-                                escapeCsv(offer.getDescription()),
-                                escapeCsv(offer.getLink())
-                            );
+                                    id++,
+                                    escapeCsv(offer.getTitle()),
+                                    escapeCsv(offer.getCompany()),
+                                    escapeCsv(offer.getLocation()),
+                                    escapeCsv(offer.getSource()),
+                                    escapeCsv(getFormattedDate(offer)),
+                                    escapeCsv(offer.getDescription()),
+                                    escapeCsv(offer.getLink()));
                             writer.println(row);
                         }
                     }
                     return null;
                 }
-                
+
                 private String escapeCsv(String value) {
-                    if (value == null) return "";
+                    if (value == null)
+                        return "";
                     value = value.replace("\"", "\"\"");
                     value = value.replace("\n", " ").replace("\r", " ");
                     return value;
@@ -409,36 +407,35 @@ public class OffresFrame extends JFrame {
                 protected void done() {
                     try {
                         get();
-                        
+
                         String message = String.format(
-                            "<html>"
-                            + "<div style='font-size:11pt; font-weight:bold; color:#27ae60;'>"
-                            + "✅ Téléchargement terminé"
-                            + "</div>"
-                            + "<div style='font-size:10pt; margin-top:8px;'>"
-                            + "Fichier enregistré :<br>"
-                            + "<span style='color:#7b8a8b;'>%s</span>"
-                            + "</div>"
-                            + "<div style='font-size:9pt; color:#3498db; margin-top:8px;'>"
-                            + "%d offres exportées"
-                            + "</div>"
-                            + "</html>",
-                            selectedFile.getName(),
-                            jobOffers.size()
-                        );
-                        
+                                "<html>"
+                                        + "<div style='font-size:11pt; font-weight:bold; color:#27ae60;'>"
+                                        + "Téléchargement terminé"
+                                        + "</div>"
+                                        + "<div style='font-size:10pt; margin-top:8px;'>"
+                                        + "Fichier enregistré :<br>"
+                                        + "<span style='color:#7b8a8b;'>%s</span>"
+                                        + "</div>"
+                                        + "<div style='font-size:9pt; color:#3498db; margin-top:8px;'>"
+                                        + "%d offres exportées"
+                                        + "</div>"
+                                        + "</html>",
+                                selectedFile.getName(),
+                                jobOffers.size());
+
                         JOptionPane.showMessageDialog(OffresFrame.this,
-                            message,
-                            "Téléchargement",
-                            JOptionPane.INFORMATION_MESSAGE);
-                        
+                                message,
+                                "Téléchargement",
+                                JOptionPane.INFORMATION_MESSAGE);
+
                     } catch (Exception e) {
                         JOptionPane.showMessageDialog(OffresFrame.this,
-                            "<html><div style='color:#e74c3c; font-weight:bold;'>"
-                            + "❌ Erreur lors du téléchargement"
-                            + "</div></html>",
-                            "Erreur",
-                            JOptionPane.ERROR_MESSAGE);
+                                "<html><div style='color:#e74c3c; font-weight:bold;'>"
+                                        + " Erreur lors du téléchargement"
+                                        + "</div></html>",
+                                "Erreur",
+                                JOptionPane.ERROR_MESSAGE);
                     }
                 }
             };

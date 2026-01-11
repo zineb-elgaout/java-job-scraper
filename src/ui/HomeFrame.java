@@ -23,18 +23,18 @@ public class HomeFrame extends JFrame {
     private final String[] TITLES = {
         "Lancer le scraping",
         "Voir les offres", 
-        "Statistiques",
+        "Machine Learning",  // Changé de "Statistiques"
         "Filtrer & trier"
     };
-    
-    // Noms des fichiers d'images
+
     private final String[] IMAGE_FILES = {
         "scraping.jpg",
         "offers.jpg", 
-        "stats.jpg",
+        "ml.jpg",  // Changé de "stats.jpg"
         "filter.jpg"
     };
 
+    
     public HomeFrame(String username) {
         initUI(username);
     }
@@ -178,11 +178,8 @@ public class HomeFrame extends JFrame {
                     case 1: // "Voir les offres"
                         new OffresFrame();
                         break;
-                    case 2: // "Statistiques"
-                        JOptionPane.showMessageDialog(HomeFrame.this, 
-                            "Affichage des statistiques...", 
-                            "Information", 
-                            JOptionPane.INFORMATION_MESSAGE);
+                    case 2: // "Machine Learning"
+                        new MLFrame();  // Nouvelle fenêtre ML
                         break;
                     case 3: // "Filtrer & trier"
                     	JOptionPane.showMessageDialog(HomeFrame.this, 
