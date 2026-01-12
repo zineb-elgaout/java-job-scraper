@@ -24,14 +24,14 @@ public class HomeFrame extends JFrame {
         "Lancer le scraping",
         "Voir les offres", 
         "Machine Learning",  // Changé de "Statistiques"
-        "Filtrer & trier"
+        "Statistiques"
     };
 
     private final String[] IMAGE_FILES = {
         "scraping.jpg",
         "offers.jpg", 
-        "ml.jpg",  // Changé de "stats.jpg"
-        "filter.jpg"
+        "neural-network.png",  // Changé de "stats.jpg"
+        "diagram.png"
     };
 
     
@@ -103,10 +103,7 @@ public class HomeFrame extends JFrame {
             new EmptyBorder(15, 40, 15, 40)
         ));
         
-        JLabel footerText = new JLabel("© 2024 JobScraper • Version 1.0");
-        footerText.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        footerText.setForeground(TEXT_SECONDARY);
-        footer.add(footerText);
+       
         
         add(footer, BorderLayout.SOUTH);
 
@@ -181,11 +178,8 @@ public class HomeFrame extends JFrame {
                     case 2: // "Machine Learning"
                         new MLFrame();  // Nouvelle fenêtre ML
                         break;
-                    case 3: // "Filtrer & trier"
-                    	JOptionPane.showMessageDialog(HomeFrame.this, 
-                                "Affichage des statistiques...", 
-                                "Information", 
-                                JOptionPane.INFORMATION_MESSAGE);
+                    case 3: // "Statistiques"
+                    	new StatisticsFrame();
                         break;
                 }
             }

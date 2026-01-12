@@ -12,66 +12,69 @@ import ml.*;
 import weka.core.Instances;
 import weka.classifiers.Classifier;
 import weka.classifiers.evaluation.Evaluation;
-import weka.clusterers.Clusterer;
 
 public class MLFrame extends JFrame {
     
-    // Palette de couleurs moderne
-    private final Color PRIMARY = new Color(99, 102, 241);
-    private final Color PRIMARY_HOVER = new Color(79, 82, 221);
-    private final Color BACKGROUND = new Color(249, 250, 251);
+    private final Color PRIMARY = new Color(52, 152, 219);
+    private final Color BACKGROUND = new Color(248, 249, 252);
     private final Color SURFACE = Color.WHITE;
-    private final Color TEXT_PRIMARY = new Color(17, 24, 39);
-    private final Color TEXT_SECONDARY = new Color(107, 114, 128);
-    private final Color BORDER = new Color(229, 231, 235);
-    private final Color SUCCESS = new Color(34, 197, 94);
-    private final Color WARNING = new Color(251, 146, 60);
-    private final Color ERROR = new Color(239, 68, 68);
+    private final Color TEXT_PRIMARY = new Color(44, 62, 80);
+    private final Color TEXT_SECONDARY = new Color(127, 140, 141);
+    private final Color BORDER = new Color(230, 233, 238);
+    private final Color SUCCESS = new Color(46, 204, 113);
+    private final Color ERROR = new Color(231, 76, 60);
     
     private JTextArea outputArea;
     private JLabel statusLabel;
     private JProgressBar progressBar;
     
-    // Composants ML disponibles
+    // Composants ML
     private JobDataLoader dataLoader;
     private JobClassifier classifier;
     private JobClustering clustering;
+    private ModelEvaluator evaluator;
+    private RecommendationService RecommendationService;
     
-    // Données chargées
+    // Données
     private Instances dataset;
     private Instances trainData;
     private Instances testData;
-    private Classifier currentClassifier;
+    private Classifier currentModel;
     
     public MLFrame() {
         dataLoader = new JobDataLoader();
         classifier = new JobClassifier();
         clustering = new JobClustering();
+        evaluator = new ModelEvaluator();
+        RecommendationService = new RecommendationService();
         initUI();
     }
     
     private void initUI() {
-        setTitle("JobScraper ML");
-        setSize(1400, 850);
+        setTitle("JobScraper - Machine Learning");
+        setSize(1000, 700);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         
+        // Panel principal
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(BACKGROUND);
         setContentPane(mainPanel);
         
+        // Header
         add(createHeader(), BorderLayout.NORTH);
         
+        // Contenu principal
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        splitPane.setDividerLocation(280);
+        splitPane.setDividerLocation(200);
         splitPane.setDividerSize(1);
-        splitPane.setBorder(null);
-        splitPane.setBackground(BACKGROUND);
         
         splitPane.setLeftComponent(createSidebar());
         splitPane.setRightComponent(createContentPanel());
         
         add(splitPane, BorderLayout.CENTER);
+        
+        // Status bar
         add(createStatusBar(), BorderLayout.SOUTH);
         
         setVisible(true);
@@ -82,26 +85,18 @@ public class MLFrame extends JFrame {
         header.setBackground(SURFACE);
         header.setBorder(new CompoundBorder(
             BorderFactory.createMatteBorder(0, 0, 1, 0, BORDER),
-            new EmptyBorder(20, 30, 20, 30)
+            new EmptyBorder(15, 20, 15, 20)
         ));
         
-        JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
-        titlePanel.setBackground(SURFACE);
-        
-        JLabel iconLabel = new JLabel("⚡");
-        iconLabel.setFont(new Font("Segoe UI", Font.PLAIN, 24));
-        
         JLabel titleLabel = new JLabel("Machine Learning");
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        titleLabel.setForeground(TEXT_PRIMARY);
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        titleLabel.setForeground(PRIMARY);
         
-        titlePanel.add(iconLabel);
-        titlePanel.add(titleLabel);
-        
-        JButton closeButton = createModernButton("Fermer", false);
+        JButton closeButton = new JButton("Fermer");
+        closeButton.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         closeButton.addActionListener(e -> dispose());
         
-        header.add(titlePanel, BorderLayout.WEST);
+        header.add(titleLabel, BorderLayout.WEST);
         header.add(closeButton, BorderLayout.EAST);
         
         return header;
@@ -110,57 +105,52 @@ public class MLFrame extends JFrame {
     private JPanel createSidebar() {
         JPanel sidebar = new JPanel();
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
-        sidebar.setBackground(SURFACE);
-        sidebar.setBorder(new CompoundBorder(
-            BorderFactory.createMatteBorder(0, 0, 0, 1, BORDER),
-            new EmptyBorder(25, 20, 20, 20)
-        ));
-        
-        JLabel navLabel = new JLabel("NAVIGATION");
-        navLabel.setFont(new Font("Segoe UI", Font.BOLD, 11));
-        navLabel.setForeground(TEXT_SECONDARY);
-        navLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        sidebar.add(navLabel);
-        sidebar.add(Box.createRigidArea(new Dimension(0, 15)));
+        sidebar.setBackground(new Color(245, 245, 245));
+        sidebar.setBorder(new EmptyBorder(20, 15, 20, 15));
         
         String[] menuItems = {
-            "Charger données",
-            "Classification",
-            "Clustering",
-            "Gestion modèles",
-            "Tests complets"
+            " Charger données",
+            " Classification",
+            " Clustering",
+            " Modèles",
+            " Recommandations"
         };
         
         for (int i = 0; i < menuItems.length; i++) {
             JButton btn = createSidebarButton(menuItems[i], i);
             btn.setAlignmentX(Component.LEFT_ALIGNMENT);
             sidebar.add(btn);
-            sidebar.add(Box.createRigidArea(new Dimension(0, 6)));
+            sidebar.add(Box.createRigidArea(new Dimension(0, 8)));
         }
         
         sidebar.add(Box.createVerticalGlue());
-        sidebar.add(createInfoPanel());
+        
+        // Info simple
+        JLabel info = new JLabel("<html><small>ML pour offres d'emploi</small></html>");
+        info.setFont(new Font("Segoe UI", Font.PLAIN, 10));
+        info.setForeground(TEXT_SECONDARY);
+        info.setAlignmentX(Component.LEFT_ALIGNMENT);
+        sidebar.add(info);
         
         return sidebar;
     }
     
     private JButton createSidebarButton(String text, int index) {
         JButton button = new JButton(text);
-        button.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        button.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         button.setForeground(TEXT_PRIMARY);
         button.setBackground(SURFACE);
-        button.setBorder(new EmptyBorder(12, 16, 12, 16));
+        button.setBorder(new EmptyBorder(10, 15, 10, 15));
         button.setHorizontalAlignment(SwingConstants.LEFT);
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        button.setMaximumSize(new Dimension(240, 44));
-        button.setFocusPainted(false);
+        button.setMaximumSize(new Dimension(180, 40));
         
         button.addActionListener(e -> handleMenuAction(index));
         
         button.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                button.setBackground(new Color(243, 244, 246));
+                button.setBackground(new Color(240, 245, 255));
                 button.setForeground(PRIMARY);
             }
             
@@ -177,64 +167,25 @@ public class MLFrame extends JFrame {
     private void handleMenuAction(int index) {
         switch(index) {
             case 0: loadData(); break;
-            case 1: showClassificationMenu(); break;
-            case 2: showClusteringMenu(); break;
+            case 1: showClassification(); break;
+            case 2: showClustering(); break;
             case 3: showModels(); break;
-            case 4: runAllTests(); break;
+            case 4: showRecommendations(); break;
         }
-    }
-    
-    private JPanel createInfoPanel() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBackground(new Color(239, 246, 255));
-        panel.setBorder(new CompoundBorder(
-            BorderFactory.createLineBorder(new Color(219, 234, 254), 1, true),
-            new EmptyBorder(16, 16, 16, 16)
-        ));
-        panel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        
-        JLabel infoLabel = new JLabel("À propos");
-        infoLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        infoLabel.setForeground(PRIMARY);
-        infoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        
-        JTextArea infoText = new JTextArea(
-            "Analyse ML des offres d'emploi :\n" +
-            "• Classification automatique\n" +
-            "• Clustering des compétences\n" +
-            "• Modèles prédictifs"
-        );
-        infoText.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-        infoText.setForeground(TEXT_SECONDARY);
-        infoText.setBackground(new Color(239, 246, 255));
-        infoText.setLineWrap(true);
-        infoText.setWrapStyleWord(true);
-        infoText.setEditable(false);
-        infoText.setBorder(new EmptyBorder(8, 0, 0, 0));
-        
-        panel.add(infoLabel);
-        panel.add(infoText);
-        
-        return panel;
     }
     
     private JPanel createContentPanel() {
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(BACKGROUND);
-        panel.setBorder(new EmptyBorder(20, 20, 20, 20));
+        panel.setBackground(SURFACE);
+        panel.setBorder(new EmptyBorder(15, 15, 15, 15));
         
         outputArea = new JTextArea();
-        outputArea.setFont(new Font("Consolas", Font.PLAIN, 12));
+        outputArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
         outputArea.setEditable(false);
-        outputArea.setBackground(SURFACE);
-        outputArea.setForeground(TEXT_PRIMARY);
-        outputArea.setBorder(new EmptyBorder(20, 20, 20, 20));
-        outputArea.setLineWrap(true);
-        outputArea.setWrapStyleWord(true);
+        outputArea.setBackground(new Color(250, 250, 250));
         
         JScrollPane scrollPane = new JScrollPane(outputArea);
-        scrollPane.setBorder(BorderFactory.createLineBorder(BORDER, 1, true));
+        scrollPane.setBorder(BorderFactory.createLineBorder(BORDER, 1));
         
         showWelcomeMessage();
         
@@ -248,18 +199,16 @@ public class MLFrame extends JFrame {
         statusBar.setBackground(SURFACE);
         statusBar.setBorder(new CompoundBorder(
             BorderFactory.createMatteBorder(1, 0, 0, 0, BORDER),
-            new EmptyBorder(12, 30, 12, 30)
+            new EmptyBorder(8, 15, 8, 15)
         ));
         
         statusLabel = new JLabel("Prêt");
-        statusLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        statusLabel.setFont(new Font("Segoe UI", Font.PLAIN, 11));
         statusLabel.setForeground(TEXT_SECONDARY);
         
         progressBar = new JProgressBar();
-        progressBar.setPreferredSize(new Dimension(200, 6));
+        progressBar.setPreferredSize(new Dimension(150, 16));
         progressBar.setVisible(false);
-        progressBar.setForeground(PRIMARY);
-        progressBar.setBorderPainted(false);
         
         statusBar.add(statusLabel, BorderLayout.WEST);
         statusBar.add(progressBar, BorderLayout.EAST);
@@ -267,57 +216,10 @@ public class MLFrame extends JFrame {
         return statusBar;
     }
     
-    private JButton createModernButton(String text, boolean isPrimary) {
-        JButton button = new JButton(text);
-        button.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        button.setBorder(new EmptyBorder(10, 24, 10, 24));
-        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        button.setFocusPainted(false);
-        
-        if (isPrimary) {
-            button.setBackground(PRIMARY);
-            button.setForeground(Color.WHITE);
-            button.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseEntered(MouseEvent e) {
-                    button.setBackground(PRIMARY_HOVER);
-                }
-                @Override
-                public void mouseExited(MouseEvent e) {
-                    button.setBackground(PRIMARY);
-                }
-            });
-        } else {
-            button.setBackground(SURFACE);
-            button.setForeground(TEXT_SECONDARY);
-            button.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(BORDER, 1),
-                new EmptyBorder(9, 23, 9, 23)
-            ));
-            button.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseEntered(MouseEvent e) {
-                    button.setBackground(new Color(249, 250, 251));
-                }
-                @Override
-                public void mouseExited(MouseEvent e) {
-                    button.setBackground(SURFACE);
-                }
-            });
-        }
-        
-        return button;
-    }
-    
     private void updateStatus(String message, String type) {
         statusLabel.setText(message);
-        
-        switch(type) {
-            case "success": statusLabel.setForeground(SUCCESS); break;
-            case "warning": statusLabel.setForeground(WARNING); break;
-            case "error": statusLabel.setForeground(ERROR); break;
-            default: statusLabel.setForeground(TEXT_SECONDARY);
-        }
+        statusLabel.setForeground(type.equals("error") ? ERROR : 
+                                 type.equals("success") ? SUCCESS : TEXT_SECONDARY);
     }
     
     private void appendOutput(String text) {
@@ -331,46 +233,46 @@ public class MLFrame extends JFrame {
     
     private void showWelcomeMessage() {
         clearOutput();
-        appendOutput("╔═══════════════════════════════════════════════════════════╗");
-        appendOutput("║           SYSTÈME MACHINE LEARNING                        ║");
-        appendOutput("║           Analyse des Offres d'Emploi                     ║");
-        appendOutput("╚═══════════════════════════════════════════════════════════╝");
+        appendOutput("=== SYSTÈME MACHINE LEARNING ===");
+        appendOutput("Analyse des offres d'emploi");
         appendOutput("");
-        appendOutput("Bienvenue ! Commencez par charger les données.");
+        appendOutput("Options disponibles :");
+        appendOutput("1. Charger les données");
+        appendOutput("2. Classification");
+        appendOutput("3. Clustering");
+        appendOutput("4. Gérer les modèles");
+        appendOutput("5. Générer des recommandations");
         appendOutput("");
     }
     
-    // ========== MÉTHODES ML RÉELLES ==========
+    // ========== MÉTHODES ML ==========
     
     private void loadData() {
         clearOutput();
-        appendOutput("═══ CHARGEMENT DES DONNÉES ═══\n");
+        appendOutput("Chargement des données...\n");
         
         SwingWorker<Void, String> worker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() throws Exception {
                 try {
-                    publish("→ Vérification du fichier de données...");
+                    publish("Vérification du fichier...");
                     dataLoader.checkDataFile();
                     
-                    publish("→ Chargement du dataset...");
+                    publish("Chargement du dataset...");
                     dataset = dataLoader.loadDataset();
                     
-                    publish("\n✓ DONNÉES CHARGÉES AVEC SUCCÈS !\n");
-                    
-                    // Afficher les statistiques RÉELLES
-                    dataLoader.printDataStatistics(dataset);
-                    
-                    publish("\n→ Division des données (80% entraînement, 20% test)...");
+                    publish("Division des données (80/20)...");
                     Map<String, Instances> split = dataLoader.splitTrainTest(dataset, 80.0);
                     trainData = split.get("train");
                     testData = split.get("test");
                     
-                    publish("\n✓ Données prêtes pour l'analyse ML !");
+                    publish("✅ DONNÉES CHARGÉES !");
+                    publish("Total : " + dataset.numInstances() + " instances");
+                    publish("Entraînement : " + trainData.numInstances() + " instances");
+                    publish("Test : " + testData.numInstances() + " instances");
                     
                 } catch (Exception e) {
-                    publish("\n✗ ERREUR : " + e.getMessage());
-                    e.printStackTrace();
+                    publish("❌ Erreur : " + e.getMessage());
                 }
                 return null;
             }
@@ -391,113 +293,101 @@ public class MLFrame extends JFrame {
         
         progressBar.setVisible(true);
         progressBar.setIndeterminate(true);
-        updateStatus("Chargement en cours...", "warning");
+        updateStatus("Chargement...", "");
         worker.execute();
     }
     
-    private void showClassificationMenu() {
+    private void showClassification() {
         if (trainData == null) {
-            JOptionPane.showMessageDialog(this, 
-                "Veuillez d'abord charger les données !", 
-                "Erreur", 
-                JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Veuillez d'abord charger les données !", 
+                "Erreur", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
-        String[] options = {
-            "J48 (Arbre de décision)",
-            "Naive Bayes",
-            "Random Forest",
-            "k-NN",
-            "Réseau de neurones",
-            "Vote (Ensemble)",
-            "Comparer tous les algorithmes"
-        };
+        clearOutput();
+        appendOutput("=== CLASSIFICATION ===\n");
         
-        String choice = (String) JOptionPane.showInputDialog(
-            this,
-            "Choisissez un algorithme de classification :",
-            "Classification",
-            JOptionPane.QUESTION_MESSAGE,
-            null,
-            options,
-            options[0]
-        );
+        String[] options = {"J48", "Naive Bayes", "Random Forest", "k-NN", "Comparer tous", "Évaluer modèle"};
+        String choice = (String) JOptionPane.showInputDialog(this,
+            "Choisissez une option :", "Classification",
+            JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
         
         if (choice != null) {
-            runClassification(choice);
+            if (choice.equals("Évaluer modèle")) {
+                evaluateCurrentModel();
+            } else {
+                runClassification(choice);
+            }
         }
     }
     
-    private void runClassification(String algorithmName) {
+    private void runClassification(String algorithm) {
         clearOutput();
-        appendOutput("═══ CLASSIFICATION : " + algorithmName + " ═══\n");
+        appendOutput("Classification avec " + algorithm + "...\n");
         
         SwingWorker<Void, String> worker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() throws Exception {
                 try {
-                    Classifier clf = null;
-                    
-                    switch(algorithmName) {
-                        case "J48 (Arbre de décision)":
-                            clf = classifier.trainJ48(trainData);
-                            break;
-                        case "Naive Bayes":
-                            clf = classifier.trainNaiveBayes(trainData);
-                            break;
-                        case "Random Forest":
-                            clf = classifier.trainRandomForest(trainData);
-                            break;
-                        case "k-NN":
-                            clf = classifier.trainKNN(trainData);
-                            break;
-                        case "Réseau de neurones":
-                            clf = classifier.trainNeuralNetwork(trainData);
-                            break;
-                        case "Vote (Ensemble)":
-                            clf = classifier.trainVotingClassifier(trainData);
-                            break;
-                        case "Comparer tous les algorithmes":
-                            publish("\n→ Comparaison de tous les algorithmes...\n");
-                            classifier.compareAlgorithms(trainData, testData);
-                            return null;
-                    }
-                    
-                    if (clf != null) {
-                        currentClassifier = clf;
+                    if (algorithm.equals("Comparer tous")) {
+                        publish("Comparaison des algorithmes...\n");
+                        classifier.compareAlgorithms(trainData, testData);
+                    } else {
+                        Classifier clf = null;
                         
-                        publish("\n→ Évaluation du modèle...\n");
-                        Evaluation eval = classifier.evaluateClassifier(clf, trainData, testData);
+                        switch(algorithm) {
+                            case "J48": clf = classifier.trainJ48(trainData); break;
+                            case "Naive Bayes": clf = classifier.trainNaiveBayes(trainData); break;
+                            case "Random Forest": clf = classifier.trainRandomForest(trainData); break;
+                            case "k-NN": clf = classifier.trainKNN(trainData); break;
+                        }
                         
-                        publish("\n→ Détails de l'évaluation...\n");
-                        classifier.printEvaluationDetails(eval, testData);
-                        
-                        // Validation croisée
-                        publish("\n→ Validation croisée (10 folds)...\n");
-                        classifier.crossValidate(clf, dataset, 10);
-                        
-                        publish("\n✓ Classification terminée !");
-                        
-                        // Proposer de sauvegarder le modèle
-                        int save = JOptionPane.showConfirmDialog(MLFrame.this,
-                            "Voulez-vous sauvegarder ce modèle ?",
-                            "Sauvegarder",
-                            JOptionPane.YES_NO_OPTION);
+                        if (clf != null) {
+                            currentModel = clf;
+                            publish("Évaluation du modèle...\n");
+                            Evaluation eval = classifier.evaluateClassifier(clf, trainData, testData);
                             
-                        if (save == JOptionPane.YES_OPTION) {
-                            String modelName = JOptionPane.showInputDialog(MLFrame.this,
-                                "Nom du modèle :",
-                                algorithmName.replaceAll("[^a-zA-Z0-9]", "_") + ".model");
-                            if (modelName != null && !modelName.isEmpty()) {
-                                classifier.saveModel(clf, modelName);
-                                publish("✓ Modèle sauvegardé : " + modelName);
+                            publish("\n📊 RÉSULTATS :");
+                            publish("Précision : " + String.format("%.2f", eval.pctCorrect()) + "%");
+                            publish("Kappa : " + String.format("%.3f", eval.kappa()));
+                            publish("AUC moyen : " + String.format("%.3f", eval.weightedAreaUnderROC()));
+                            
+                            // Affichage simplifié de la matrice de confusion
+                            double[][] matrix = eval.confusionMatrix();
+                            if (matrix.length <= 5) {
+                                publish("\nMatrice de confusion :");
+                                for (double[] row : matrix) {
+                                    StringBuilder sb = new StringBuilder();
+                                    for (double val : row) {
+                                        sb.append(String.format("%5.0f ", val));
+                                    }
+                                    publish(sb.toString());
+                                }
                             }
+                            
+                            // Validation croisée
+                            publish("\nValidation croisée (10 folds)...");
+                            classifier.crossValidate(clf, dataset, 10);
+                            
+                            // Sauvegarde automatique
+                            String timestamp = new java.text.SimpleDateFormat("yyyyMMdd_HHmmss")
+                                .format(new java.util.Date());
+                            String filename = "models/" + algorithm.toLowerCase() + "_" + timestamp + ".model";
+                            
+                            File modelsDir = new File("models");
+                            if (!modelsDir.exists()) {
+                                modelsDir.mkdirs();
+                            }
+                            
+                            classifier.saveModel(clf, filename);
+                            publish("\n✅ Modèle sauvegardé : " + filename);
                         }
                     }
                     
+                    publish("\n✅ Classification terminée !");
+                    
                 } catch (Exception e) {
-                    publish("\n✗ ERREUR : " + e.getMessage());
+                    publish("❌ Erreur : " + e.getMessage());
                     e.printStackTrace();
                 }
                 return null;
@@ -519,37 +409,77 @@ public class MLFrame extends JFrame {
         
         progressBar.setVisible(true);
         progressBar.setIndeterminate(true);
-        updateStatus("Classification en cours...", "warning");
+        updateStatus("Traitement...", "");
         worker.execute();
     }
     
-    private void showClusteringMenu() {
-        if (dataset == null) {
-            JOptionPane.showMessageDialog(this, 
-                "Veuillez d'abord charger les données !", 
-                "Erreur", 
-                JOptionPane.ERROR_MESSAGE);
+    private void evaluateCurrentModel() {
+        if (currentModel == null) {
+            JOptionPane.showMessageDialog(this, "Aucun modèle chargé. Entraînez d'abord un modèle.", 
+                "Erreur", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
-        String[] options = {
-            "K-Means (k=3)",
-            "K-Means (k=5)",
-            "EM Clustering",
-            "Clustering Hiérarchique",
-            "Trouver k optimal",
-            "Comparer les algorithmes"
+        clearOutput();
+        appendOutput("Évaluation du modèle courant...\n");
+        
+        SwingWorker<Void, String> worker = new SwingWorker<>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                try {
+                    publish("Évaluation sur l'ensemble de test...\n");
+                    Evaluation eval = new Evaluation(testData);
+                    eval.evaluateModel(currentModel, testData);
+                    
+                    publish("📊 PERFORMANCES :");
+                    publish("Précision : " + String.format("%.2f", eval.pctCorrect()) + "%");
+                    publish("Kappa : " + String.format("%.3f", eval.kappa()));
+                    publish("AUC moyen : " + String.format("%.3f", eval.weightedAreaUnderROC()));
+                    
+                    // Évaluation détaillée
+                    publish("\n=== ÉVALUATION DÉTAILLÉE ===");
+                    evaluator.evaluateClassificationModel(currentModel, trainData, testData);
+                    
+                } catch (Exception e) {
+                    publish("❌ Erreur : " + e.getMessage());
+                }
+                return null;
+            }
+            
+            @Override
+            protected void process(List<String> chunks) {
+                for (String msg : chunks) {
+                    appendOutput(msg);
+                }
+            }
+            
+            @Override
+            protected void done() {
+                updateStatus("Évaluation terminée", "success");
+                progressBar.setVisible(false);
+            }
         };
         
-        String choice = (String) JOptionPane.showInputDialog(
-            this,
-            "Choisissez une méthode de clustering :",
-            "Clustering",
-            JOptionPane.QUESTION_MESSAGE,
-            null,
-            options,
-            options[0]
-        );
+        progressBar.setVisible(true);
+        progressBar.setIndeterminate(true);
+        updateStatus("Évaluation...", "");
+        worker.execute();
+    }
+    
+    private void showClustering() {
+        if (dataset == null) {
+            JOptionPane.showMessageDialog(this, "Veuillez d'abord charger les données !", 
+                "Erreur", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        clearOutput();
+        appendOutput("=== CLUSTERING ===\n");
+        
+        String[] options = {"K-Means (k=3)", "K-Means (k=5)", "Trouver k optimal"};
+        String choice = (String) JOptionPane.showInputDialog(this,
+            "Choisissez une méthode :", "Clustering",
+            JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
         
         if (choice != null) {
             runClustering(choice);
@@ -558,46 +488,24 @@ public class MLFrame extends JFrame {
     
     private void runClustering(String method) {
         clearOutput();
-        appendOutput("═══ CLUSTERING : " + method + " ═══\n");
+        appendOutput("Clustering " + method + "...\n");
         
         SwingWorker<Void, String> worker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() throws Exception {
                 try {
-                    Clusterer clust = null;
-                    
-                    switch(method) {
-                        case "K-Means (k=3)":
-                            clust = clustering.applyKMeans(dataset, 3);
-                            clustering.analyzeClusters(clust, dataset);
-                            clustering.visualizeClusters(clust, dataset);
-                            break;
-                        case "K-Means (k=5)":
-                            clust = clustering.applyKMeans(dataset, 5);
-                            clustering.analyzeClusters(clust, dataset);
-                            clustering.visualizeClusters(clust, dataset);
-                            break;
-                        case "EM Clustering":
-                            clust = clustering.applyEM(dataset, 5);
-                            clustering.analyzeClusters(clust, dataset);
-                            break;
-                        case "Clustering Hiérarchique":
-                            clust = clustering.applyHierarchicalClustering(dataset, 4);
-                            clustering.analyzeClusters(clust, dataset);
-                            break;
-                        case "Trouver k optimal":
-                            clustering.findOptimalK(dataset, 10);
-                            break;
-                        case "Comparer les algorithmes":
-                            clustering.compareClusteringAlgorithms(dataset);
-                            break;
+                    if (method.equals("K-Means (k=3)")) {
+                        clustering.applyKMeans(dataset, 3);
+                    } else if (method.equals("K-Means (k=5)")) {
+                        clustering.applyKMeans(dataset, 5);
+                    } else if (method.equals("Trouver k optimal")) {
+                        clustering.findOptimalK(dataset, 10);
                     }
                     
-                    publish("\n✓ Clustering terminé !");
+                    publish("\n✅ Clustering terminé !");
                     
                 } catch (Exception e) {
-                    publish("\n✗ ERREUR : " + e.getMessage());
-                    e.printStackTrace();
+                    publish("❌ Erreur : " + e.getMessage());
                 }
                 return null;
             }
@@ -618,26 +526,41 @@ public class MLFrame extends JFrame {
         
         progressBar.setVisible(true);
         progressBar.setIndeterminate(true);
-        updateStatus("Clustering en cours...", "warning");
+        updateStatus("Traitement...", "");
         worker.execute();
     }
     
     private void showModels() {
         clearOutput();
-        appendOutput("═══ GESTION DES MODÈLES ═══\n");
+        appendOutput("=== GESTION DES MODÈLES ===\n");
         
+        String[] options = {"Lister les modèles", "Charger un modèle", "Sauvegarder modèle courant"};
+        String choice = (String) JOptionPane.showInputDialog(this,
+            "Choisissez une action :", "Gestion des modèles",
+            JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        
+        if (choice != null) {
+            switch(choice) {
+                case "Lister les modèles": listModels(); break;
+                case "Charger un modèle": loadModel(); break;
+                case "Sauvegarder modèle courant": saveCurrentModel(); break;
+            }
+        }
+    }
+    
+    private void listModels() {
         SwingWorker<Void, String> worker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() throws Exception {
-                File dir = new File("models");
+                File modelsDir = new File("models");
                 
-                if (dir.exists() && dir.listFiles() != null) {
-                    File[] files = dir.listFiles((d, name) -> name.endsWith(".model"));
+                if (modelsDir.exists() && modelsDir.listFiles() != null) {
+                    File[] files = modelsDir.listFiles((dir, name) -> name.endsWith(".model"));
                     
                     if (files != null && files.length > 0) {
                         publish("📁 MODÈLES DISPONIBLES (" + files.length + ") :\n");
-                        publish("═".repeat(70));
                         
+                        // Trier par date
                         java.util.Arrays.sort(files, 
                             (f1, f2) -> Long.compare(f2.lastModified(), f1.lastModified()));
                         
@@ -645,19 +568,16 @@ public class MLFrame extends JFrame {
                             double kb = f.length() / 1024.0;
                             String date = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm")
                                 .format(new java.util.Date(f.lastModified()));
-                            publish(String.format("%-40s  %8.1f KB  %s", 
+                            publish(String.format("• %-35s  %6.1f KB  %s", 
                                 f.getName(), kb, date));
                         }
-                        
-                        publish("\n💡 Pour utiliser un modèle, chargez-le depuis le code.");
                     } else {
-                        publish("Aucun modèle disponible dans le dossier 'models'.");
-                        publish("\nLes modèles entraînés peuvent être sauvegardés après la classification.");
+                        publish("Aucun modèle trouvé.");
+                        publish("Les modèles seront sauvegardés dans le dossier 'models'.");
                     }
                 } else {
-                    publish("Dossier 'models' introuvable.");
-                    publish("Créez le dossier 'models' à la racine du projet.");
-                    publish("\nLes modèles entraînés y seront sauvegardés automatiquement.");
+                    publish("Dossier 'models' non trouvé.");
+                    publish("Créez le dossier pour sauvegarder vos modèles.");
                 }
                 return null;
             }
@@ -671,77 +591,166 @@ public class MLFrame extends JFrame {
         };
         
         worker.execute();
-        updateStatus("Liste des modèles", "success");
+        updateStatus("Modèles listés", "success");
     }
     
-    private void runAllTests() {
-        if (dataset == null) {
-            JOptionPane.showMessageDialog(this, 
-                "Veuillez d'abord charger les données !", 
-                "Erreur", 
-                JOptionPane.ERROR_MESSAGE);
+    private void loadModel() {
+        File modelsDir = new File("models");
+        if (!modelsDir.exists() || modelsDir.listFiles() == null) {
+            JOptionPane.showMessageDialog(this, "Dossier 'models' non trouvé ou vide.", 
+                "Erreur", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
+        File[] files = modelsDir.listFiles((dir, name) -> name.endsWith(".model"));
+        if (files == null || files.length == 0) {
+            JOptionPane.showMessageDialog(this, "Aucun modèle disponible.", 
+                "Erreur", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        String[] modelNames = new String[files.length];
+        for (int i = 0; i < files.length; i++) {
+            modelNames[i] = files[i].getName();
+        }
+        
+        String selected = (String) JOptionPane.showInputDialog(this,
+            "Choisissez un modèle à charger :", "Charger modèle",
+            JOptionPane.QUESTION_MESSAGE, null, modelNames, modelNames[0]);
+        
+        if (selected != null) {
+            clearOutput();
+            appendOutput("Chargement du modèle " + selected + "...\n");
+            
+            SwingWorker<Void, String> worker = new SwingWorker<>() {
+                @Override
+                protected Void doInBackground() throws Exception {
+                    try {
+                        String modelPath = "models/" + selected;
+                        currentModel = classifier.loadModel(modelPath);
+                        publish("✅ Modèle chargé : " + selected);
+                        publish("Type : " + currentModel.getClass().getSimpleName());
+                        
+                        // Évaluer le modèle si les données sont chargées
+                        if (testData != null) {
+                            publish("\nÉvaluation sur l'ensemble de test...");
+                            Evaluation eval = new Evaluation(testData);
+                            eval.evaluateModel(currentModel, testData);
+                            publish("Précision : " + String.format("%.2f", eval.pctCorrect()) + "%");
+                        }
+                        
+                    } catch (Exception e) {
+                        publish("❌ Erreur : " + e.getMessage());
+                    }
+                    return null;
+                }
+                
+                @Override
+                protected void process(List<String> chunks) {
+                    for (String msg : chunks) {
+                        appendOutput(msg);
+                    }
+                }
+                
+                @Override
+                protected void done() {
+                    updateStatus("Modèle chargé", "success");
+                }
+            };
+            
+            worker.execute();
+        }
+    }
+    
+    private void saveCurrentModel() {
+        if (currentModel == null) {
+            JOptionPane.showMessageDialog(this, "Aucun modèle courant à sauvegarder.", 
+                "Erreur", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        String name = JOptionPane.showInputDialog(this,
+            "Nom du modèle (sans extension) :", "model_personnalise");
+        
+        if (name != null && !name.trim().isEmpty()) {
+            try {
+                String filename = "models/" + name + ".model";
+                classifier.saveModel(currentModel, filename);
+                JOptionPane.showMessageDialog(this, 
+                    "Modèle sauvegardé : " + filename, 
+                    "Succès", JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, 
+                    "Erreur lors de la sauvegarde : " + e.getMessage(), 
+                    "Erreur", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+    
+    private void showRecommendations() {
         clearOutput();
-        appendOutput("═══ TESTS COMPLETS DU SYSTÈME ML ═══\n");
+        appendOutput("=== GÉNÉRATION DE RECOMMANDATIONS ===\n");
         
-        int response = JOptionPane.showConfirmDialog(this,
-            "Exécuter tous les tests ML ?\nCette opération peut prendre plusieurs minutes.",
-            "Confirmation",
-            JOptionPane.YES_NO_OPTION,
-            JOptionPane.QUESTION_MESSAGE);
+        generateRecommendations();
+    }
+    
+    private void generateRecommendations() {
+        String[] categories = {"IT_DEVELOPPEMENT", "COMMERCIAL_VENTE", 
+                              "RESSOURCES_HUMAINES", "DATA_IA", "MARKETING"};
+        
+        String selected = (String) JOptionPane.showInputDialog(this,
+            "Choisissez une catégorie :", "Recommandations",
+            JOptionPane.QUESTION_MESSAGE, null, categories, categories[0]);
+        
+        if (selected != null) {
+            clearOutput();
+            appendOutput("Génération de recommandations pour : " + selected + "\n");
             
-        if (response != JOptionPane.YES_OPTION) return;
-        
-        SwingWorker<Void, String> worker = new SwingWorker<>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-                try {
-                    publish("═".repeat(70));
-                    publish("               SUITE DE TESTS COMPLÈTE");
-                    publish("═".repeat(70));
-                    
-                    // Test 1: Classification
-                    publish("\n[1/2] TESTS DE CLASSIFICATION...\n");
-                    publish("-".repeat(70));
-                    classifier.compareAlgorithms(trainData, testData);
-                    
-                    // Test 2: Clustering
-                    publish("\n[2/2] TESTS DE CLUSTERING...\n");
-                    publish("-".repeat(70));
-                    clustering.findOptimalK(dataset, 8);
-                    Clusterer kmeans = clustering.applyKMeans(dataset, 3);
-                    clustering.analyzeClusters(kmeans, dataset);
-                    
-                    publish("\n" + "═".repeat(70));
-                    publish("✓ TOUS LES TESTS TERMINÉS AVEC SUCCÈS !");
-                    publish("═".repeat(70));
-                    
-                } catch (Exception e) {
-                    publish("\n✗ Erreur pendant les tests : " + e.getMessage());
-                    e.printStackTrace();
+            SwingWorker<Void, String> worker = new SwingWorker<>() {
+                @Override
+                protected Void doInBackground() throws Exception {
+                    try {
+                        Map<String, Object> reco = RecommendationService.generateRecommendations(selected);
+                        
+                        appendOutput("📋 CONSEILS PROFESSIONNELS :");
+                        List<String> conseils = (List<String>) reco.get("conseils");
+                        if (conseils != null) {
+                            for (String c : conseils) {
+                                appendOutput("  • " + c);
+                            }
+                        }
+                        
+                        appendOutput("\n🎓 FORMATIONS SUGGÉRÉES :");
+                        List<String> formations = (List<String>) reco.get("formations_suggerees");
+                        if (formations != null) {
+                            for (String f : formations) {
+                                appendOutput("  • " + f);
+                            }
+                        }
+                        
+                        appendOutput("\n💼 COMPÉTENCES CLÉS :");
+                        List<String> competences = (List<String>) reco.get("competences_cles");
+                        if (competences != null) {
+                            for (String comp : competences) {
+                                appendOutput("  • " + comp);
+                            }
+                        }
+                        
+                        appendOutput("\n✅ Recommandations générées !");
+                        
+                    } catch (Exception e) {
+                        appendOutput("❌ Erreur : " + e.getMessage());
+                    }
+                    return null;
                 }
-                return null;
-            }
-            
-            @Override
-            protected void process(List<String> chunks) {
-                for (String msg : chunks) {
-                    appendOutput(msg);
+                
+                @Override
+                protected void done() {
+                    updateStatus("Recommandations générées", "success");
                 }
-            }
+            };
             
-            @Override
-            protected void done() {
-                updateStatus("Tests terminés", "success");
-                progressBar.setVisible(false);
-            }
-        };
-        
-        progressBar.setVisible(true);
-        progressBar.setIndeterminate(true);
-        updateStatus("Tests en cours...", "warning");
-        worker.execute();
+            worker.execute();
+        }
     }
 }
