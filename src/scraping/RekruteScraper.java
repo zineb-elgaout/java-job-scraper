@@ -104,7 +104,7 @@ public class RekruteScraper {
         
         try {
             // Scraper seulement 3 pages pour éviter les problèmes
-            for (int page = 1; page <= 500; page++) {
+            for (int page = 1; page <= 5; page++) {
                 System.out.println("Page " + page + "...");
                 
                 try {

@@ -2,7 +2,6 @@ package ml;
 
 import weka.classifiers.Classifier;
 import weka.classifiers.evaluation.Evaluation;
-import weka.clusterers.Clusterer;
 import weka.core.Instances;
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -12,13 +11,11 @@ public class MLMain {
     public static Scanner scanner = new Scanner(System.in);
     public static JobDataLoader dataLoader = new JobDataLoader();
     public static JobClassifier jobClassifier = new JobClassifier();
-    public static JobClustering jobClustering = new JobClustering();
     public static ModelEvaluator modelEvaluator = new ModelEvaluator();
 
     public static Instances dataset;
     public static Map<String, Instances> trainTestSplit;
     public static Classifier trainedClassifier;
-    public static Clusterer trainedClusterer;
 
     public static int getIntInput(String message) {
         System.out.print(message);
@@ -27,7 +24,7 @@ public class MLMain {
             scanner.next();
         }
         int value = scanner.nextInt();
-        scanner.nextLine(); 
+        scanner.nextLine();
         return value;
     }
 
@@ -38,7 +35,7 @@ public class MLMain {
             scanner.next();
         }
         double value = scanner.nextDouble();
-        scanner.nextLine(); 
+        scanner.nextLine();
         return value;
     }
 
@@ -62,12 +59,9 @@ public class MLMain {
                         classificationMenu();
                         break;
                     case 3:
-                        clusteringMenu();
-                        break;
-                    case 4:
                         modelsManagementMenu();
                         break;
-                    case 5:
+                    case 4:
                         runQuickTests();
                         break;
                     case 0:
@@ -93,9 +87,8 @@ public class MLMain {
         System.out.println("\n=== MENU PRINCIPAL ===");
         System.out.println("1. Charger et préparer les données");
         System.out.println("2. Classification");
-        System.out.println("3. Clustering");
-        System.out.println("4. Gestion des modèles");
-        System.out.println("5. Tests rapides");
+        System.out.println("3. Gestion des modèles");
+        System.out.println("4. Tests rapides");
         System.out.println("0. Quitter");
     }
 
@@ -121,7 +114,7 @@ public class MLMain {
         System.out.println("Division des données (" + percentage + "% train, " + (100 - percentage) + "% test)...");
         trainTestSplit = dataLoader.splitTrainTest(dataset, percentage);
 
-        System.out.println("\n✅ Données prêtes !");
+        System.out.println("\n Données prêtes !");
         System.out.println("   Total : " + dataset.numInstances() + " instances");
         System.out.println("   Entrainement : " + trainTestSplit.get("train").numInstances() + " instances");
         System.out.println("   Test : " + trainTestSplit.get("test").numInstances() + " instances");
@@ -198,7 +191,7 @@ public class MLMain {
             Evaluation eval = jobClassifier.evaluateClassifier(classifier,
                     trainTestSplit.get("train"), trainTestSplit.get("test"));
 
-            System.out.println("\n📊 PERFORMANCES :");
+            System.out.println("\nPERFORMANCES :");
             System.out.println("   Précision : " + String.format("%.2f", eval.pctCorrect()) + "%");
             System.out.println("   Kappa : " + String.format("%.3f", eval.kappa()));
 
@@ -214,7 +207,7 @@ public class MLMain {
             }
 
             jobClassifier.saveModel(classifier, filename);
-            System.out.println("✅ Modèle sauvegardé : " + filename);
+            System.out.println(" Modèle sauvegardé : " + filename);
 
             // Afficher la taille
             File modelFile = new File(filename);
@@ -222,42 +215,6 @@ public class MLMain {
                 double sizeKB = modelFile.length() / 1024.0;
                 System.out.println("   Taille : " + String.format("%.1f", sizeKB) + " KB");
             }
-        }
-    }
-
-    public static void clusteringMenu() throws Exception {
-        if (dataset == null) {
-            System.out.println("Veuillez d'abord charger les données (option 1).");
-            return;
-        }
-
-        System.out.println("\n=== CLUSTERING ===");
-        System.out.println("1. K-Means (k=3)");
-        System.out.println("2. K-Means (k=5)");
-        System.out.println("3. Trouver k optimal");
-        System.out.println("4. Retour");
-
-        int choice = getIntInput("\nVotre choix : ");
-
-        switch (choice) {
-            case 1:
-                System.out.println("\n--- K-MEANS CLUSTERING (k=3) ---");
-                trainedClusterer = jobClustering.applyKMeans(dataset, 3);
-                jobClustering.analyzeClusters(trainedClusterer, dataset);
-                break;
-            case 2:
-                System.out.println("\n--- K-MEANS CLUSTERING (k=5) ---");
-                trainedClusterer = jobClustering.applyKMeans(dataset, 5);
-                jobClustering.analyzeClusters(trainedClusterer, dataset);
-                break;
-            case 3:
-                System.out.println("\n--- RECHERCHE DU K OPTIMAL (2 à 10) ---");
-                jobClustering.findOptimalK(dataset, 10);
-                break;
-            case 4:
-                return;
-            default:
-                System.out.println("Choix invalide.");
         }
     }
 
@@ -289,7 +246,7 @@ public class MLMain {
             File[] modelFiles = modelsDir.listFiles((dir, name) -> name.endsWith(".model"));
 
             if (modelFiles != null && modelFiles.length > 0) {
-                System.out.println("\n📁 MODÈLES DISPONIBLES (" + modelFiles.length + ") :");
+                System.out.println("\n MODÈLES DISPONIBLES (" + modelFiles.length + ") :");
                 System.out.println("=".repeat(50));
 
                 // Trier par date de modification
@@ -315,25 +272,25 @@ public class MLMain {
 
         // Essayer plusieurs chemins
         String[] possiblePaths = {
-            modelName,
-            modelName + ".model",
-            "models/" + modelName,
-            "models/" + modelName + ".model"
+                modelName,
+                modelName + ".model",
+                "models/" + modelName,
+                "models/" + modelName + ".model"
         };
 
         for (String path : possiblePaths) {
             if (new File(path).exists()) {
                 try {
                     trainedClassifier = jobClassifier.loadModel(path);
-                    System.out.println("✅ Modèle chargé : " + path);
+                    System.out.println(" Modèle chargé : " + path);
                     return;
                 } catch (Exception e) {
                     System.out.println("Erreur avec " + path + ": " + e.getMessage());
                 }
             }
         }
-        
-        System.out.println("❌ Modèle non trouvé. Essayer: models/nom_du_modele.model");
+
+        System.out.println(" Modèle non trouvé. Essayer: models/nom_du_modele.model");
     }
 
     public static void runQuickTests() throws Exception {
@@ -354,9 +311,6 @@ public class MLMain {
         System.out.println("\n1. Test de classification...");
         jobClassifier.compareAlgorithms(trainTestSplit.get("train"), trainTestSplit.get("test"));
 
-        System.out.println("\n2. Test de clustering...");
-        jobClustering.findOptimalK(dataset, 8);
-
-        System.out.println("\n✅ Tests terminés !");
+        System.out.println("\n Tests terminés !");
     }
 }

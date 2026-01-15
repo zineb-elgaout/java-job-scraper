@@ -3,329 +3,247 @@ package ui;
 import dao.UserDAO;
 import javax.swing.*;
 import java.awt.*;
+import java.util.regex.Pattern;
 
 public class RegisterFrame extends JFrame {
+
+    // ===== REGEX PATTERNS =====
+   
     
-    private static final Color PRIMARY = new Color(99, 102, 241);
-    private static final Color HOVER = new Color(79, 82, 221);
-    private static final Color TEXT = new Color(55, 65, 81);
-    private static final Color TEXT_LIGHT = new Color(107, 114, 128);
-    private static final Color BORDER_COLOR = new Color(229, 231, 235);
+    // Mot de passe: au moins 8 caractères, 1 chiffre, 1 lettre
+    private static final Pattern PASSWORD_PATTERN = Pattern.compile(
+        "^(?=.*[0-9])(?=.*[a-zA-Z]).{8,}$"
+    );
 
     public RegisterFrame() {
-        setTitle("Job Scraper - Inscription");
-        setSize(900, 600);
+
+        Color PRIMARY = new Color(52, 152, 219);
+        Color BORDER  = new Color(41, 128, 185);
+        Color HOVER = new Color(31, 118, 175); // Couleur de survol
+        Color SUCCESS = new Color(46, 204, 113); // Vert pour succès
+
+        setTitle("Inscription - Job Scraper App");
+        setSize(700, 450);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setResizable(false);
+        setUndecorated(false);
         setLayout(new BorderLayout());
 
-        JPanel content = new JPanel(new BorderLayout());
-        content.setBackground(Color.WHITE);
-        content.add(createLeftPanel(), BorderLayout.WEST);
-        content.add(createFormPanel(), BorderLayout.CENTER);
-        
-        add(content);
-        setVisible(true);
-    }
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setBorder(BorderFactory.createLineBorder(BORDER,2));
+        add(mainPanel);
 
-    private JPanel createLeftPanel() {
-        JPanel panel = new JPanel();
-        panel.setBackground(new Color(249, 250, 251));
-        panel.setPreferredSize(new Dimension(380, 0));
-        panel.setLayout(new GridBagLayout());
-        panel.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, BORDER_COLOR));
-
-        JPanel textPanel = new JPanel();
-        textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
-        textPanel.setBackground(new Color(249, 250, 251));
-        textPanel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
-
-        JLabel title = new JLabel("Job Scraper");
-        title.setFont(new Font("Segoe UI", Font.BOLD, 32));
-        title.setForeground(TEXT);
-        title.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        JLabel subtitle = new JLabel("Rejoignez-nous dès maintenant");
-        subtitle.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        subtitle.setForeground(TEXT_LIGHT);
-        subtitle.setAlignmentX(Component.LEFT_ALIGNMENT);
-        subtitle.setBorder(BorderFactory.createEmptyBorder(10, 0, 30, 0));
-
-        JTextArea description = new JTextArea(
-            "• Accès illimité aux fonctionnalités\n\n" +
-            "• Analyses ML personnalisées\n\n" +
-            "• Sauvegarde de vos recherches\n" 
-            
-        );
-        description.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        description.setForeground(TEXT_LIGHT);
-        description.setBackground(new Color(249, 250, 251));
-        description.setEditable(false);
-        description.setFocusable(false);
-        description.setBorder(null);
-        description.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        textPanel.add(title);
-        textPanel.add(subtitle);
-        textPanel.add(description);
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.anchor = GridBagConstraints.WEST;
-        panel.add(textPanel, gbc);
-
-        return panel;
-    }
-
-    private JPanel createFormPanel() {
-        JPanel panel = new JPanel();
-        panel.setBackground(Color.WHITE);
-        panel.setLayout(new GridBagLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(40, 60, 40, 60));
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.WEST;
-
-        JLabel heading = new JLabel("Inscription");
-        heading.setFont(new Font("Segoe UI", Font.BOLD, 28));
-        heading.setForeground(TEXT);
-        gbc.gridy = 0;
-        gbc.insets = new Insets(0, 0, 10, 0);
-        panel.add(heading, gbc);
-
-        JLabel subheading = new JLabel("Créez votre compte gratuitement");
-        subheading.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        subheading.setForeground(TEXT_LIGHT);
-        gbc.gridy++;
-        gbc.insets = new Insets(0, 0, 35, 0);
-        panel.add(subheading, gbc);
-
-        JLabel userLabel = new JLabel("Nom d'utilisateur");
-        userLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        userLabel.setForeground(TEXT);
-        gbc.gridy++;
-        gbc.insets = new Insets(0, 0, 8, 0);
-        panel.add(userLabel, gbc);
-
-        JTextField userField = createTextField();
-        gbc.gridy++;
-        gbc.insets = new Insets(0, 0, 18, 0);
-        panel.add(userField, gbc);
-
-        JLabel passLabel = new JLabel("Mot de passe");
-        passLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        passLabel.setForeground(TEXT);
-        gbc.gridy++;
-        gbc.insets = new Insets(0, 0, 8, 0);
-        panel.add(passLabel, gbc);
-
-        JPasswordField passField = createPasswordField();
-        gbc.gridy++;
-        gbc.insets = new Insets(0, 0, 18, 0);
-        panel.add(passField, gbc);
-
-        JLabel confirmLabel = new JLabel("Confirmer le mot de passe");
-        confirmLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        confirmLabel.setForeground(TEXT);
-        gbc.gridy++;
-        gbc.insets = new Insets(0, 0, 8, 0);
-        panel.add(confirmLabel, gbc);
-
-        JPasswordField confirmField = createPasswordField();
-        gbc.gridy++;
-        gbc.insets = new Insets(0, 0, 25, 0);
-        panel.add(confirmField, gbc);
-
-        JLabel message = new JLabel("");
-        message.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        message.setHorizontalAlignment(SwingConstants.CENTER);
-        gbc.gridy++;
-        gbc.insets = new Insets(0, 0, 15, 0);
-        panel.add(message, gbc);
-
-        JButton registerBtn = createButton("Créer mon compte");
-        gbc.gridy++;
-        gbc.insets = new Insets(0, 0, 25, 0);
-        panel.add(registerBtn, gbc);
-
-        registerBtn.addActionListener(e -> {
-            String username = userField.getText().trim();
-            String password = new String(passField.getPassword());
-            String confirm = new String(confirmField.getPassword());
-            
-            if (username.isEmpty() || password.isEmpty() || confirm.isEmpty()) {
-                message.setForeground(new Color(239, 68, 68));
-                message.setText("Veuillez remplir tous les champs");
-                return;
-            }
-            
-            if (password.length() < 4) {
-                message.setForeground(new Color(239, 68, 68));
-                message.setText("Le mot de passe doit contenir au moins 4 caractères");
-                return;
-            }
-            
-            if (!password.equals(confirm)) {
-                message.setForeground(new Color(239, 68, 68));
-                message.setText("Les mots de passe ne correspondent pas");
-                return;
-            }
-            
-            if (UserDAO.register(username, password)) {
-                message.setForeground(new Color(34, 197, 94));
-                message.setText("Compte créé avec succès !");
-                
-                Timer timer = new Timer(1200, ev -> {
-                    new LoginFrame();
-                    dispose();
-                });
-                timer.setRepeats(false);
-                timer.start();
-            } else {
-                message.setForeground(new Color(239, 68, 68));
-                message.setText("Ce nom d'utilisateur existe déjà");
-            }
-        });
-
-        // Touche Entrée pour créer le compte
-        java.awt.event.KeyAdapter enterListener = new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent e) {
-                if (e.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
-                    registerBtn.doClick();
-                }
+        // ===== PANEL GAUCHE =====
+        JPanel leftPanel = new JPanel() {
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g;
+                g2.setPaint(new GradientPaint(0,0,BORDER,0,getHeight(),PRIMARY));
+                g2.fillRect(0,0,getWidth(),getHeight());
             }
         };
-        userField.addKeyListener(enterListener);
-        passField.addKeyListener(enterListener);
-        confirmField.addKeyListener(enterListener);
+        leftPanel.setPreferredSize(new Dimension(280,0));
+        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
 
-        JPanel login = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
-        login.setBackground(Color.WHITE);
+        JLabel app = new JLabel("JOB SCRAPER");
+        app.setFont(new Font("Arial", Font.BOLD,28));
+        app.setForeground(Color.WHITE);
+        app.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel sub = new JLabel("Créer un compte");
+        sub.setForeground(Color.WHITE);
+        sub.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        leftPanel.add(Box.createVerticalGlue());
+        leftPanel.add(app);
+        leftPanel.add(Box.createRigidArea(new Dimension(0,10)));
+        leftPanel.add(sub);
+        leftPanel.add(Box.createVerticalGlue());
+        mainPanel.add(leftPanel, BorderLayout.WEST);
+
+        // ===== PANEL DROIT =====
+        JPanel rightPanel = new JPanel(new GridBagLayout());
+        rightPanel.setBackground(Color.WHITE);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets=new Insets(10,10,10,10);
+        gbc.fill=GridBagConstraints.HORIZONTAL;
+
+        JLabel title = new JLabel("Inscription");
+        title.setFont(new Font("Arial", Font.BOLD,24));
+        title.setForeground(BORDER);
+
+        // ===== Champs initialisés (vides) =====
+        JTextField username = new JTextField(15);
+        JPasswordField password = new JPasswordField(15);
+        JPasswordField confirm = new JPasswordField(15);
+
+        JTextField[] fields = { username, password, confirm };
+        for(JTextField f : fields){
+            f.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0,0,2,0,BORDER),
+                BorderFactory.createEmptyBorder(4,8,4,8)
+            ));
+        }
+
+        // ===== Bouton Créer le compte - NOUVEAU STYLE =====
+        JButton registerBtn = createStyledButton("Créer le compte", PRIMARY, HOVER);
         
-        JLabel text = new JLabel("Vous avez déjà un compte ?");
-        text.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        text.setForeground(TEXT_LIGHT);
-        
-        JLabel link = new JLabel("Se connecter");
-        link.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        link.setForeground(PRIMARY);
-        link.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        link.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent e) {
-                link.setText("<html><u>Se connecter</u></html>");
+        // ===== Phrase + lien sur la même ligne =====
+        JPanel loginPanel = new JPanel(new FlowLayout(FlowLayout.CENTER,5,0));
+        loginPanel.setBackground(Color.WHITE);
+
+        JLabel questionLabel = new JLabel("Vous avez déjà un compte ?");
+        questionLabel.setForeground(Color.BLACK);
+        questionLabel.setFont(new Font("Arial", Font.PLAIN, 13));
+
+        JLabel loginLink = new JLabel("Se connecter");
+        loginLink.setForeground(BORDER);
+        loginLink.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        loginLink.setFont(new Font("Arial", Font.PLAIN, 13));
+
+        loginLink.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                loginLink.setText("<html><u>Se connecter</u></html>");
             }
-            public void mouseExited(java.awt.event.MouseEvent e) {
-                link.setText("Se connecter");
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                loginLink.setText("Se connecter");
             }
-            public void mouseClicked(java.awt.event.MouseEvent e) {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                SessionData.username = "";
+                SessionData.password = "";
                 new LoginFrame();
                 dispose();
             }
         });
 
-        login.add(text);
-        login.add(link);
+        loginPanel.add(questionLabel);
+        loginPanel.add(loginLink);
+
+        JLabel message = new JLabel("");
+        message.setForeground(Color.RED);
+
+        // ===== Placement =====
+        gbc.gridx=0; gbc.gridy=0; gbc.gridwidth=2;
+        rightPanel.add(title, gbc);
+
+        gbc.gridy++; gbc.gridwidth=1;
+        rightPanel.add(new JLabel("UserName :"), gbc);
+        gbc.gridx=1;
+        rightPanel.add(username, gbc);
+
+        gbc.gridy++; gbc.gridx=0;
+        rightPanel.add(new JLabel("Mot de passe :"), gbc);
+        gbc.gridx=1;
+        rightPanel.add(password, gbc);
+
+        gbc.gridy++; gbc.gridx=0;
+        rightPanel.add(new JLabel("Confirmer MDP :"), gbc);
+        gbc.gridx=1;
+        rightPanel.add(confirm, gbc);
+
+        gbc.gridy++; gbc.gridx=0; gbc.gridwidth=2; gbc.anchor=GridBagConstraints.CENTER;
+        rightPanel.add(registerBtn, gbc);
+
         gbc.gridy++;
-        gbc.insets = new Insets(0, 0, 0, 0);
-        panel.add(login, gbc);
+        rightPanel.add(loginPanel, gbc);
 
-        return panel;
-    }
+        gbc.gridy++;
+        rightPanel.add(message, gbc);
 
-    private JTextField createTextField() {
-        JTextField field = new JTextField(22);
-        field.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        field.setForeground(TEXT);
-        field.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(BORDER_COLOR, 1, true),
-            BorderFactory.createEmptyBorder(11, 14, 11, 14)
-        ));
-        
-        field.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent e) {
-                field.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(PRIMARY, 2, true),
-                    BorderFactory.createEmptyBorder(10, 13, 10, 13)
-                ));
+        // ===== Actions =====
+        registerBtn.addActionListener(e -> {
+            String UserName = username.getText().trim();
+            String p = new String(password.getPassword());
+            String c = new String(confirm.getPassword());
+
+            // Validation des champs vides
+            if(UserName.isEmpty() || p.isEmpty() || c.isEmpty()){
+                message.setForeground(Color.RED);
+                message.setText("Veuillez remplir tous les champs");
+                return;
             }
-            public void focusLost(java.awt.event.FocusEvent e) {
-                field.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(BORDER_COLOR, 1, true),
-                    BorderFactory.createEmptyBorder(11, 14, 11, 14)
-                ));
+            
+            
+            
+            // Validation du mot de passe
+            if(!PASSWORD_PATTERN.matcher(p).matches()) {
+                message.setForeground(Color.RED);
+                message.setText("Mot de passe: min 8 caractères, 1 chiffre, 1 lettre");
+                return;
+            }
+            
+            // Vérification de la correspondance des mots de passe
+            if(!p.equals(c)){
+                message.setForeground(Color.RED);
+                message.setText("Les mots de passe ne correspondent pas");
+                return;
+            }
+
+            // Tentative d'inscription
+            if(UserDAO.register(UserName, p)){
+                // Message de succès en vert
+                message.setForeground(SUCCESS);
+                message.setText("✓ Compte créé avec succès !");
+                
+                // Redirection vers LoginFrame après un délai
+                Timer timer = new Timer(1500, ev -> {
+                    SessionData.username = "";
+                    SessionData.password = "";
+                    new LoginFrame();
+                    dispose();
+                });
+                timer.setRepeats(false);
+                timer.start();
+                
+            } else {
+                message.setForeground(Color.RED);
+                message.setText("UserName déjà utilisé");
             }
         });
-        
-        return field;
-    }
 
-    private JPasswordField createPasswordField() {
-        JPasswordField field = new JPasswordField(22);
-        field.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        field.setForeground(TEXT);
-        field.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(BORDER_COLOR, 1, true),
-            BorderFactory.createEmptyBorder(11, 14, 11, 14)
-        ));
-        
-        field.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent e) {
-                field.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(PRIMARY, 2, true),
-                    BorderFactory.createEmptyBorder(10, 13, 10, 13)
-                ));
-            }
-            public void focusLost(java.awt.event.FocusEvent e) {
-                field.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(BORDER_COLOR, 1, true),
-                    BorderFactory.createEmptyBorder(11, 14, 11, 14)
-                ));
-            }
-        });
-        
-        return field;
+        mainPanel.add(rightPanel, BorderLayout.CENTER);
+        setVisible(true);
     }
-
-    private JButton createButton(String text) {
-        JButton btn = new JButton(text) {
+    
+    // Méthode pour créer un bouton stylisé (même style que les autres)
+    private JButton createStyledButton(String text, Color bgColor, Color hoverColor) {
+        JButton button = new JButton(text) {
+            @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 
                 if (getModel().isPressed()) {
-                    g2.setColor(HOVER.darker());
+                    g2.setColor(hoverColor.darker());
                 } else if (getModel().isRollover()) {
-                    g2.setColor(HOVER);
+                    g2.setColor(hoverColor);
                 } else {
-                    g2.setColor(PRIMARY);
+                    g2.setColor(bgColor);
                 }
                 
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
                 g2.dispose();
+                
                 super.paintComponent(g);
             }
         };
         
-        btn.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        btn.setForeground(Color.WHITE);
-        btn.setBorder(BorderFactory.createEmptyBorder(12, 30, 12, 30));
-        btn.setContentAreaFilled(false);
-        btn.setFocusPainted(false);
-        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        button.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        button.setForeground(Color.WHITE);
+        button.setBorder(BorderFactory.createEmptyBorder(12, 35, 12, 35));
+        button.setContentAreaFilled(false);
+        button.setBorderPainted(false);
+        button.setFocusPainted(false);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        button.setPreferredSize(new Dimension(180, 45));
         
-        return btn;
+        return button;
     }
     
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            try {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            new RegisterFrame();
-        });
+    // ===== MÉTHODES DE VALIDATION (optionnelles, pour réutilisation) =====
+    
+    
+    public static boolean isValidPassword(String password) {
+        return PASSWORD_PATTERN.matcher(password).matches();
     }
 }

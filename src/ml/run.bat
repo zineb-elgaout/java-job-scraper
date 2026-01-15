@@ -61,10 +61,8 @@ REM Compilation avec encodage UTF-8
     "%SRC_DIR%\ml\MLMain.java" ^
     "%SRC_DIR%\ml\JobDataLoader.java" ^
     "%SRC_DIR%\ml\JobClassifier.java" ^
-    "%SRC_DIR%\ml\JobClustering.java" ^
-    "%SRC_DIR%\ml\AssociationMiner.java" ^
     "%SRC_DIR%\ml\ModelEvaluator.java" ^
-    "%SRC_DIR%\ml\PredictionService.java"
+    "%SRC_DIR%\ml\RecommendationService.java"
 
 if errorlevel 1 (
     echo.

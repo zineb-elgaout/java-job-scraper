@@ -194,7 +194,7 @@ public class JobClassifier {
     }
     
     /**
-     * Entraîne un classifieur k-NN (IBk)
+     * Entraîne un classifieur k-NN 
      */
     public Classifier trainKNN(Instances trainData) throws Exception {
         System.out.println("\n ENTRAINEMENT K-NN");
@@ -302,7 +302,7 @@ public class JobClassifier {
             classifiers.put("Logistic", new Logistic());
         }
         
-        // Essayer Neural Network séparément car peut échouer
+        //  Neural Network 
         classifiers.put("NeuralNetwork", new MultilayerPerceptron());
         
         Map<String, Double> results = new TreeMap<>();

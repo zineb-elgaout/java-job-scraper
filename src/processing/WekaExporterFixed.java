@@ -36,7 +36,7 @@ public class WekaExporterFixed {
     }
 
     private static void exportFullDatasetFixed(Connection conn) throws SQLException, IOException {
-        System.out.println("\n📦 EXPORT DU DATASET COMPLET");
+        System.out.println("\n EXPORT DU DATASET COMPLET");
         System.out.println("─".repeat(30));
 
         // Utiliser jobs_advanced_categories au lieu de jobs_balanced_fixed
@@ -62,7 +62,7 @@ public class WekaExporterFixed {
     }
 
     private static void exportSimplifiedDatasetFixed(Connection conn) throws SQLException, IOException {
-        System.out.println("\n📊 EXPORT DU DATASET SIMPLIFIÉ");
+        System.out.println("\nEXPORT DU DATASET SIMPLIFIÉ");
         System.out.println("─".repeat(35));
 
         String query = """

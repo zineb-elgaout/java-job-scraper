@@ -2,7 +2,7 @@ package processing;
 
 public class RunCompletePipelineFixed {
     public static void main(String[] args) {
-        System.out.println("🚀 PIPELINE COMPLET CORRIGÉ POUR WEKA");
+        System.out.println("PIPELINE COMPLET CORRIGÉ POUR WEKA");
         System.out.println("════════════════════════════════════════════════════════");
         System.out.println(" Objectif : Transformer vos données scrapées en format Weka");
         System.out.println("════════════════════════════════════════════════════════\n");

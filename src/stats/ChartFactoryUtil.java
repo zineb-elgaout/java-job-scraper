@@ -4,7 +4,6 @@ import org.jfree.chart.*;
 import org.jfree.chart.plot.*;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
-import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.CategoryLabelPositions;
 
 import java.awt.*;
