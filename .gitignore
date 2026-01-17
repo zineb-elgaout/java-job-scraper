@@ -2,7 +2,7 @@
 /bin/
 /out/
 *.class
-
+/data/
 # VS Code
 .vscode/
 
@@ -12,9 +12,11 @@
 # Logs
 *.log
 
-
 #csv files 
 *.csv
 
 #models 
 *.model
+
+#zip folders 
+*.zip
