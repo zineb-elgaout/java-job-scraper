@@ -11,3 +11,10 @@
 
 # Logs
 *.log
+
+
+#csv files 
+*.csv
+
+#models 
+*.model
