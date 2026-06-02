@@ -23,18 +23,18 @@ public class HomeFrame extends JFrame {
     private final String[] TITLES = {
         "Lancer le scraping",
         "Voir les offres", 
-        "Statistiques",
-        "Filtrer & trier"
+        "Machine Learning",  // Changé de "Statistiques"
+        "Statistiques"
     };
-    
-    // Noms des fichiers d'images
+
     private final String[] IMAGE_FILES = {
         "scraping.jpg",
         "offers.jpg", 
-        "stats.jpg",
-        "filter.jpg"
+        "neural-network.png",  // Changé de "stats.jpg"
+        "diagram.png"
     };
 
+    
     public HomeFrame(String username) {
         initUI(username);
     }
@@ -103,10 +103,7 @@ public class HomeFrame extends JFrame {
             new EmptyBorder(15, 40, 15, 40)
         ));
         
-        JLabel footerText = new JLabel("© 2024 JobScraper • Version 1.0");
-        footerText.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        footerText.setForeground(TEXT_SECONDARY);
-        footer.add(footerText);
+       
         
         add(footer, BorderLayout.SOUTH);
 
@@ -178,17 +175,11 @@ public class HomeFrame extends JFrame {
                     case 1: // "Voir les offres"
                         new OffresFrame();
                         break;
-                    case 2: // "Statistiques"
-                        JOptionPane.showMessageDialog(HomeFrame.this, 
-                            "Affichage des statistiques...", 
-                            "Information", 
-                            JOptionPane.INFORMATION_MESSAGE);
+                    case 2: // "Machine Learning"
+                        new MLFrame();  // Nouvelle fenêtre ML
                         break;
-                    case 3: // "Filtrer & trier"
-                    	JOptionPane.showMessageDialog(HomeFrame.this, 
-                                "Affichage des statistiques...", 
-                                "Information", 
-                                JOptionPane.INFORMATION_MESSAGE);
+                    case 3: // "Statistiques"
+                    	new StatisticsFrame();
                         break;
                 }
             }

@@ -3,8 +3,17 @@ package ui;
 import dao.UserDAO;
 import javax.swing.*;
 import java.awt.*;
+import java.util.regex.Pattern;
 
 public class LoginFrame extends JFrame {
+
+    // ===== REGEX PATTERNS =====
+    
+    
+    // Mot de passe: au moins 8 caractères, 1 chiffre, 1 lettre
+    private static final Pattern PASSWORD_PATTERN = Pattern.compile(
+        "^(?=.*[0-9])(?=.*[a-zA-Z]).{8,}$"
+    );
 
     public LoginFrame() {
 
@@ -16,9 +25,10 @@ public class LoginFrame extends JFrame {
         setSize(700, 450);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setUndecorated(true);
+        setUndecorated(false);
         setLayout(new BorderLayout());
 
+        
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBorder(BorderFactory.createLineBorder(BORDER, 2));
         add(mainPanel);
@@ -117,7 +127,7 @@ public class LoginFrame extends JFrame {
         rightPanel.add(title, gbc);
 
         gbc.gridy++; gbc.gridwidth=1;
-        rightPanel.add(new JLabel("Nom d'utilisateur :"), gbc);
+        rightPanel.add(new JLabel("UserName :"), gbc);
         gbc.gridx=1;
         rightPanel.add(username, gbc);
 
@@ -137,13 +147,33 @@ public class LoginFrame extends JFrame {
 
         // ===== Actions =====
         loginBtn.addActionListener(e -> {
-            if(UserDAO.login(username.getText(), new String(password.getPassword()))) {
+            String UserName = username.getText().trim();
+            String pwd = new String(password.getPassword());
+            
+            // Validation des champs vides
+            if(UserName.isEmpty() || pwd.isEmpty()) {
+                message.setForeground(Color.RED);
+                message.setText("Veuillez remplir tous les champs");
+                return;
+            }
+            
+            
+            
+            // Validation du mot de passe
+            if(!PASSWORD_PATTERN.matcher(pwd).matches()) {
+                message.setForeground(Color.RED);
+                message.setText("Mot de passe: min 8 caractères, 1 chiffre, 1 lettre");
+                return;
+            }
+            
+            // Tentative de connexion
+            if(UserDAO.login(UserName, pwd)) {
                 message.setForeground(new Color(39,174,96));
-               
+                message.setText("Connexion réussie !");
                 
                 // Ouvrir HomeFrame après un court délai
                 Timer timer = new Timer(500, ev -> {
-                    new HomeFrame(username.getText());
+                    new HomeFrame(UserName);
                     dispose();
                 });
                 timer.setRepeats(false);
@@ -192,5 +222,12 @@ public class LoginFrame extends JFrame {
         button.setPreferredSize(new Dimension(180, 45)); // Taille similaire
         
         return button;
+    }
+    
+    // ===== MÉTHODES DE VALIDATION (optionnelles, pour réutilisation) =====
+    
+    
+    public static boolean isValidPassword(String password) {
+        return PASSWORD_PATTERN.matcher(password).matches();
     }
 }

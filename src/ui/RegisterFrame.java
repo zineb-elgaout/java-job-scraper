@@ -3,8 +3,17 @@ package ui;
 import dao.UserDAO;
 import javax.swing.*;
 import java.awt.*;
+import java.util.regex.Pattern;
 
 public class RegisterFrame extends JFrame {
+
+    // ===== REGEX PATTERNS =====
+   
+    
+    // Mot de passe: au moins 8 caractères, 1 chiffre, 1 lettre
+    private static final Pattern PASSWORD_PATTERN = Pattern.compile(
+        "^(?=.*[0-9])(?=.*[a-zA-Z]).{8,}$"
+    );
 
     public RegisterFrame() {
 
@@ -17,7 +26,7 @@ public class RegisterFrame extends JFrame {
         setSize(700, 450);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setUndecorated(true);
+        setUndecorated(false);
         setLayout(new BorderLayout());
 
         JPanel mainPanel = new JPanel(new BorderLayout());
@@ -118,7 +127,7 @@ public class RegisterFrame extends JFrame {
         rightPanel.add(title, gbc);
 
         gbc.gridy++; gbc.gridwidth=1;
-        rightPanel.add(new JLabel("Nom d'utilisateur :"), gbc);
+        rightPanel.add(new JLabel("UserName :"), gbc);
         gbc.gridx=1;
         rightPanel.add(username, gbc);
 
@@ -143,22 +152,35 @@ public class RegisterFrame extends JFrame {
 
         // ===== Actions =====
         registerBtn.addActionListener(e -> {
-            String u = username.getText();
+            String UserName = username.getText().trim();
             String p = new String(password.getPassword());
             String c = new String(confirm.getPassword());
 
-            if(u.isEmpty() || p.isEmpty()){
+            // Validation des champs vides
+            if(UserName.isEmpty() || p.isEmpty() || c.isEmpty()){
                 message.setForeground(Color.RED);
                 message.setText("Veuillez remplir tous les champs");
                 return;
             }
+            
+            
+            
+            // Validation du mot de passe
+            if(!PASSWORD_PATTERN.matcher(p).matches()) {
+                message.setForeground(Color.RED);
+                message.setText("Mot de passe: min 8 caractères, 1 chiffre, 1 lettre");
+                return;
+            }
+            
+            // Vérification de la correspondance des mots de passe
             if(!p.equals(c)){
                 message.setForeground(Color.RED);
                 message.setText("Les mots de passe ne correspondent pas");
                 return;
             }
 
-            if(UserDAO.register(u,p)){
+            // Tentative d'inscription
+            if(UserDAO.register(UserName, p)){
                 // Message de succès en vert
                 message.setForeground(SUCCESS);
                 message.setText("✓ Compte créé avec succès !");
@@ -175,7 +197,7 @@ public class RegisterFrame extends JFrame {
                 
             } else {
                 message.setForeground(Color.RED);
-                message.setText("Nom d'utilisateur déjà utilisé");
+                message.setText("UserName déjà utilisé");
             }
         });
 
@@ -216,5 +238,12 @@ public class RegisterFrame extends JFrame {
         button.setPreferredSize(new Dimension(180, 45));
         
         return button;
+    }
+    
+    // ===== MÉTHODES DE VALIDATION (optionnelles, pour réutilisation) =====
+    
+    
+    public static boolean isValidPassword(String password) {
+        return PASSWORD_PATTERN.matcher(password).matches();
     }
 }
